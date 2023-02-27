@@ -1,12 +1,9 @@
-package main
+package impls
 
-import (
-	"fmt"
-	"time"
-	// "math/rand"
-)
-
-func quickSort(arr []int) []int {
+func QuickSort(arr []int) []int {
+	if len(arr) == 1 || len(arr) == 0 {
+		return arr
+	}
 	middle := arr[len(arr)-1]
 	var smaller []int
 	var larger []int
@@ -21,10 +18,10 @@ func quickSort(arr []int) []int {
 		}
 	}
 	if len(smaller) > 1 {
-		smaller = quickSort(smaller)
+		smaller = QuickSort(smaller)
 	}
 	if len(larger) > 1 {
-		larger = quickSort(larger)
+		larger = QuickSort(larger)
 	}
 	arr = append(smaller, middle)
 
@@ -35,11 +32,4 @@ func quickSort(arr []int) []int {
 		arr = append(arr, larger[i])
 	}
 	return arr
-}
-
-func main() {
-	randarr := []int{9,3,6,2,8,7,3,4}
-	start := time.Now()
-	quickSort(randarr)
-	fmt.Println(time.Since(start))
 }

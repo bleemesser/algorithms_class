@@ -1,11 +1,9 @@
-package main
+package impls
 
-import (
-	"fmt"
-	"time"
-)
-
-func countingSort(arr []int) []int {
+func CountingSort(arr []int) []int {
+	if len(arr) == 0 || len(arr) == 1 {
+		return arr
+	}
 	var max int
 	var min int = 1 << 32
 	for _, e := range arr {
@@ -16,6 +14,7 @@ func countingSort(arr []int) []int {
 			min = e
 		}
 	}
+	// fmt.Println(max, min)
 	buckets := make([]int,max-min+1)
 	for _, e := range arr {
 		buckets[e-min]++
@@ -30,11 +29,4 @@ func countingSort(arr []int) []int {
 		}
 	}
 	return out
-}
-
-func main() {
-	randarr := []int{9,3,6,2,8,7,3,4}
-	start := time.Now()
-	countingSort(randarr)
-	fmt.Println(time.Since(start))
 }
