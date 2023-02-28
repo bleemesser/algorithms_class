@@ -1,9 +1,11 @@
 package main
 import (
 	"algorithms_class/impls"
-	"fmt"
+	// "fmt"
+	"os"
+
 )
 
 func main() {
-	fmt.Println(impls.MergeSort([]int{3, 2, 1}))
+	impls.PrintTree(os.Stdout, impls.AvlTree([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}), 0, 'M')
 }
