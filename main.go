@@ -1,11 +1,12 @@
 package main
 import (
 	"algorithms_class/impls"
-	// "fmt"
-	"os"
+	"fmt"
 
 )
 
 func main() {
-	impls.PrintTree(os.Stdout, impls.AvlTree([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}), 0, 'M')
+	tree := impls.AvlTree([]int{10, 9, 8, 7, 6, 5, 4, 3, 2, 1})
+	fmt.Println(tree.ExportToSlice())
+	
 }
