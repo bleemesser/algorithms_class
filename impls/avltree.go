@@ -176,7 +176,6 @@ func (n *Node) PrintTree(ns int, ch rune) {
 	if n == nil {
 		return
 	}
-	
 	for i := 0; i < ns; i++ {
 		fmt.Fprint(os.Stdout, " ")
 	}
