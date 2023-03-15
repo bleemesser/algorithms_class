@@ -1,4 +1,4 @@
-package impls
+package algorithms
 
 func CountingSort(arr []int) []int {
 	if len(arr) == 0 || len(arr) == 1 {

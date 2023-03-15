@@ -9,6 +9,6 @@ def quicksort(arr):
     return quicksort(left) + middle + quicksort(right)
 
 start = time.time()
-quicksort([5,2,7,9,4,2,6,1,6,9])
+print(quicksort([5,2,7,9,4,2,6,1,6,9]))
 end = time.time()
 print(f"Time taken: {end - start}")

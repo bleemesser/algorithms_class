@@ -1,4 +1,4 @@
-package impls
+package algorithms
 
 func BinarySearch(arr []int, t int) int {
 	if len(arr) == 0 {

@@ -1,4 +1,4 @@
-package impls
+package algorithms
 
 func InsertionSort(arr []int) []int {
 	if len(arr) == 1 || len(arr) == 0 {
