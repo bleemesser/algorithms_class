@@ -120,6 +120,7 @@ func (n *Node) InsertNode(val int) *Node {
 	} else if val > n.Val {
 		n.Right = n.Right.InsertNode(val)
 	} else if val == n.Val {
+		n.Right = n.Right.InsertNode(val)
 		return n.iBalance(val)
 	}
 	return n.iBalance(val)
@@ -230,27 +231,27 @@ func (n *Node) SortToSlice() []int {
 	return vals
 }
 
-func FindMax(root *Node) int {
-	if root == nil {
-		return 0
-	}
-	if root.Right == nil {
-		return root.Val
-	}
-	return FindMax(root.Right)
-}
+// func FindMax(root *Node) int {
+// 	if root == nil {
+// 		return 0
+// 	}
+// 	if root.Right == nil {
+// 		return root.Val
+// 	}
+// 	return FindMax(root.Right)
+// }
 
-func FindMin(root *Node) int {
+func FindAVLMin(root *Node) int {
 	if root == nil {
 		return 0
 	}
 	if root.Left == nil {
 		return root.Val
 	}
-	return FindMin(root.Left)
+	return FindAVLMin(root.Left)
 }
 
-func FindVal(root *Node, val int) bool {
+func FindAVLVal(root *Node, val int) bool {
 	if root == nil {
 		return false
 	}
@@ -258,7 +259,7 @@ func FindVal(root *Node, val int) bool {
 		return true
 	}
 	if val < root.Val {
-		return FindVal(root.Left, val)
+		return FindAVLVal(root.Left, val)
 	}
-	return FindVal(root.Right, val)
+	return FindAVLVal(root.Right, val)
 }

@@ -14,18 +14,18 @@ func makeNode(val int) *BinaryTreeNode {
 	return &BinaryTreeNode{Val: val}
 }
 
-func (n *BinaryTreeNode) insert(val int) {
+func (n *BinaryTreeNode) Insert(val int) {
 	if val < n.Val {
 		if n.Left == nil {
 			n.Left = makeNode(val)
 		} else {
-			n.Left.insert(val)
+			n.Left.Insert(val)
 		}
 	} else {
 		if n.Right == nil {
 			n.Right = makeNode(val)
 		} else {
-			n.Right.insert(val)
+			n.Right.Insert(val)
 		}
 	}
 }
@@ -33,7 +33,7 @@ func (n *BinaryTreeNode) insert(val int) {
 func BinaryTree(vals []int) *BinaryTreeNode {
 	root := makeNode(vals[0])
 	for _, val := range vals[1:] {
-		root.insert(val)
+		root.Insert(val)
 	}
 	return root
 }
@@ -62,4 +62,27 @@ func (n *BinaryTreeNode) ExportToSlice() []int {
 	vals = append(vals, n.Val)
 	vals = append(vals, n.Right.ExportToSlice()...)
 	return vals
+}
+
+func FindMin(n *BinaryTreeNode) int {
+	if n == nil {
+		return 0
+	}
+	if n.Left == nil {
+		return n.Val
+	}
+	return FindMin(n.Left)
+}
+
+func FindVal(n *BinaryTreeNode, val int) bool {
+	if n == nil {
+		return false
+	}
+	if n.Val == val {
+		return true
+	}
+	if val < n.Val {
+		return FindVal(n.Left, val)
+	}
+	return FindVal(n.Right, val)
 }
