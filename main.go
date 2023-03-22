@@ -3,124 +3,142 @@ package main
 import (
 	// alg "algorithms_class/algorithms"
 	ds "algorithms_class/datastructures"
-	"fmt"
+	"sync"
+
+	// "fmt"
+	"github.com/schollz/progressbar"
 	"math/rand"
-	"strings"
+	// "strconv"
+
+	// "strings"
 	"time"
-	"strconv"
+
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/plotutil"
+	"gonum.org/v1/plot/vg"
 )
 
-func timeInsert(size int) time.Duration{
-	var totalSum time.Duration
-	for  i := 0; i < size; i++ {
-		toInsert := rand.Perm(size)
-		tree := ds.BinaryTree([]int{toInsert[0]})
-		var insertTime []time.Duration
-		for i := 0; i < size; i++ {
-			start := time.Now()
-			tree.Insert(toInsert[i])
-			elapsed := time.Since(start)
-			insertTime = append(insertTime, elapsed)
-		}
-		for _, v := range insertTime {
-			totalSum += v
-		}
+func timeInsert(size int) time.Duration { // how long does it take to construct a tree of size n
+	toInsert := rand.Perm(size)
+	tree := ds.BinaryTree([]int{toInsert[0]})
+	start := time.Now()
+	for i := 1; i < size; i++ {
+		tree.Insert(toInsert[i])
 	}
-	avg := totalSum / time.Duration(size)
-	return avg
+	elapsed := time.Since(start)
+	return elapsed
 }
 
-func timeFindMin(size int) time.Duration{
-	var totalSum time.Duration
-	for  i := 0; i < size; i++ {
-		toInsert := rand.Perm(size)
-		tree := ds.BinaryTree([]int{toInsert[0]})
-		var findMinTime []time.Duration
-		for i := 0; i < size; i++ {
-			start := time.Now()
-			ds.FindMin(tree)
-			elapsed := time.Since(start)
-			findMinTime = append(findMinTime, elapsed)
-		}
-		for _, v := range findMinTime {
-			totalSum += v
-		}
-	}
-	avg := totalSum / time.Duration(size)
-	return avg
+func timeFindMin(size int) time.Duration { // how long does it take to find the min in a tree of size n
+	tree := ds.BinaryTree(rand.Perm(size))
+	start := time.Now()
+	ds.FindMin(tree)
+	elapsed := time.Since(start)
+	return elapsed
 }
 
-func timeFindVal(size int) time.Duration{
-	var totalSum time.Duration
-	for  i := 0; i < size; i++ {
-		toInsert := rand.Perm(size)
-		tree := ds.BinaryTree([]int{toInsert[0]})
-		var findValTime []time.Duration
-		for i := 0; i < size; i++ {
-			start := time.Now()
-			ds.FindVal(tree, toInsert[i])
-			elapsed := time.Since(start)
-			findValTime = append(findValTime, elapsed)
-		}
-		for _, v := range findValTime {
-			totalSum += v
-		}
-	}
-	
-	return totalSum
-}
+func runTest(iters int, sizes []int) (map[int]time.Duration, map[int]time.Duration) {
+    var insertionLock sync.Mutex
+    var findMinLock sync.Mutex
 
+    insertionTimes := make(map[int]time.Duration)
+    findMinTimes := make(map[int]time.Duration)
+
+    // create a new progress bar
+    bar := progressbar.New(len(sizes) * 2 * iters)
+
+    for i := 0; i < iters; i++ {
+        var wg sync.WaitGroup
+
+        for _, v := range sizes {
+            wg.Add(2)
+
+            go func(v int) {
+                defer wg.Done()
+				dur := timeInsert(v)
+                insertionLock.Lock()
+                insertionTimes[v] += dur
+				insertionLock.Unlock()
+				bar.Add(1) // increment the progress bar
+
+            }(v)
+
+            go func(v int) {
+				defer wg.Done()
+				dur := timeFindMin(v)
+				findMinLock.Lock()
+				findMinTimes[v] += dur
+				findMinLock.Unlock()
+				bar.Add(1) // increment the progress bar
+            }(v)
+        }
+
+        wg.Wait()
+    }
+
+    for k, v := range insertionTimes {
+        insertionTimes[k] = v / time.Duration(iters)
+    }
+
+    for k, v := range findMinTimes {
+        findMinTimes[k] = v / time.Duration(iters)
+    }
+
+    return insertionTimes, findMinTimes
+}
 
 
 func main() {
-	overallAvg := make(map[string]time.Duration)
+	// array from 100 to 100000 in increments of 1000
+	sizes := make([]int, 100)
+	for i := 0; i < 100; i++ {
+		sizes[i] = (i + 1) * 1000
+	}
+	iters := 100
+	insertionAvg, findminAvg := runTest(iters, sizes)
 
-	iters := 1
+	// plot
+	p := plot.New()
+	p.Title.Text = "Binary Tree Insertion vs tree size"
+	p.X.Label.Text = "Tree Size"
+	p.Y.Label.Text = "Time (microseconds)"
 
-	for j := 0; j < iters; j++ {
-		//BINARY TREE
-		sum := timeInsert(10000)
-		overallAvg["Binary Tree Insertion 10000"] += sum
-		sum = timeInsert(20000)
-		overallAvg["Binary Tree Insertion 20000"] += sum
-		sum = timeInsert(40000)
-		overallAvg["Binary Tree Insertion 40000"] += sum
-		sum = timeInsert(80000)
-		overallAvg["Binary Tree Insertion 80000"] += sum
+	pts := make(plotter.XYs, len(sizes))
 
-
-		sum = timeFindMin(10000)
-		overallAvg["Binary Tree Find Min 10000"] += sum
-		sum = timeFindMin(20000)
-		overallAvg["Binary Tree Find Min 20000"] += sum
-		sum = timeFindMin(40000)
-		overallAvg["Binary Tree Find Min 40000"] += sum
-		sum = timeFindMin(80000)
-		overallAvg["Binary Tree Find Min 80000"] += sum
-
-
-		sum = timeFindVal(10000)
-		overallAvg["Binary Tree Find Val 10000"] += sum
-		sum = timeFindVal(20000)
-		overallAvg["Binary Tree Find Val 20000"] += sum
-		sum = timeFindVal(40000)
-		overallAvg["Binary Tree Find Val 40000"] += sum
-		sum = timeFindVal(80000)
-		overallAvg["Binary Tree Find Val 80000"] += sum
+	for i, v := range sizes {
+		pts[i].X = float64(v)
+		pts[i].Y = float64(insertionAvg[v].Microseconds())
 	}
 
-	for k, v := range overallAvg {
-		num,_ := strconv.Atoi(strings.Split(k, " ")[3])
-		totalIters := iters * num
-		fmt.Println(time.Duration(totalIters))
-		overallAvg[k] = v / time.Duration(totalIters)
+	err := plotutil.AddLinePoints(p, "Insertion", pts)
+	if err != nil {
+		panic(err)
 	}
-	
+	// high res plot
+	if err := p.Save(16*vg.Inch, 16*vg.Inch, "insertion.png"); err != nil {
+		panic(err)
+	}
 
-	fmt.Println("Overall averages: ")
-	for k, v := range overallAvg {
-		fmt.Println(k, v)
+	p2 := plot.New()
+	p2.Title.Text = "Binary Tree FindMin vs tree size"
+	p2.X.Label.Text = "Tree Size"
+	p2.Y.Label.Text = "Time (ns)"
+
+	pts2 := make(plotter.XYs, len(sizes))
+
+	for i, v := range sizes {
+		pts2[i].X = float64(v)
+		pts2[i].Y = float64(findminAvg[v].Nanoseconds())
 	}
-	
+
+	err = plotutil.AddLinePoints(p2, "FindMin", pts2)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := p2.Save(16*vg.Inch, 16*vg.Inch, "findMin.png"); err != nil {
+		panic(err)
+	}
 
 }
