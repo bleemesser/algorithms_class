@@ -86,3 +86,40 @@ func FindVal(n *BinaryTreeNode, val int) bool {
 	}
 	return FindVal(n.Right, val)
 }
+
+func (n *BinaryTreeNode) Delete(val int) *BinaryTreeNode {
+	if n == nil {
+        return nil
+    }
+    if val < n.Val {
+        n.Left = n.Left.Delete(val)
+        return n
+    }
+    if val > n.Val {
+        n.Right = n.Right.Delete(val)
+        return n
+    }
+    // If the node to be deleted has no children, just return nil
+    if n.Left == nil && n.Right == nil {
+        return nil
+    }
+    // If the node to be deleted has only one child, return that child
+    if n.Left == nil {
+        return n.Right
+    }
+    if n.Right == nil {
+        return n.Left
+    }
+    // If the node to be deleted has two children, replace it with the
+    // smallest val in the right subtree and delete that node
+    smallest := n.Right
+    for {
+        if smallest.Left == nil {
+            break
+        }
+        smallest = smallest.Left
+    }
+    n.Val = smallest.Val
+    n.Right = n.Right.Delete(smallest.Val)
+    return n
+}

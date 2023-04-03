@@ -165,25 +165,41 @@ func greatest(n *Node) *Node {
 
 // delete a node by value from the tree
 func (n *Node) DeleteNode(val int) *Node {
-	if n == nil {
-		return nil
-	}
-	if val > n.Val {
-		n.Right = n.Right.DeleteNode(val)
-	} else if val < n.Val {
-		n.Left = n.Left.DeleteNode(val)
-	} else {
-		if n.Left != nil || n.Right != nil {
-			next := greatest(n.Left)
-			v := next.Val
-			n.Left = n.Left.DeleteNode(v)
-			n.Val = v
-		} else if n.Left == nil && n.Right == nil {
-			return nil
-		}
-	}
-	return n.dBalance()
+    if n == nil {
+        return nil
+    }
+
+    // search for the node to delete
+    if val < n.Val {
+        n.Left = n.Left.DeleteNode(val)
+    } else if val > n.Val {
+        n.Right = n.Right.DeleteNode(val)
+    } else {
+        // node to delete found
+        if n.Left == nil && n.Right == nil {
+            // case 1: leaf node
+            n = nil
+        } else if n.Left == nil {
+            // case 2a: node has only right child
+            n = n.Right
+        } else if n.Right == nil {
+            // case 2b: node has only left child
+            n = n.Left
+        } else {
+            // case 3: node has two children
+            // find the greatest node in the left subtree
+            greatestNode := greatest(n.Left)
+            // replace the value of the current node with the value of the greatest node
+            n.Val = greatestNode.Val
+            // delete the greatest node in the left subtree
+            n.Left = n.Left.DeleteNode(greatestNode.Val)
+        }
+    }
+
+    // balance the tree
+    return n.dBalance()
 }
+
 
 // pretty-print the tree. ns is the number of spaces to indent, ch is the character to print
 // should be called with 0, 'M' always, as the root node is the middle of the tree and isn't indented
@@ -263,3 +279,11 @@ func FindAVLVal(root *Node, val int) bool {
 	}
 	return FindAVLVal(root.Right, val)
 }
+
+// func main() {
+// 	tree := AvlTree([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
+// 	tree.PrintAVLTree(0, 'M')
+// 	tree.DeleteNode(5)
+// 	tree.DeleteNode(10)
+// 	tree.PrintAVLTree(0, 'M')
+// }
