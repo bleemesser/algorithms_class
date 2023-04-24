@@ -1,0 +1,10 @@
+After 35 iterations:
+SuperNode: Rank: 0.150000, Index: 0, Links: [1 2 3 4], Backlinks: []
+After 35 iterations:
+A: Rank: 1.806754, Index: 1, Links: [2 3], Backlinks: [0 3]
+After 35 iterations:
+B: Rank: 0.949745, Index: 2, Links: [3], Backlinks: [0 1]
+After 35 iterations:
+C: Rank: 1.911623, Index: 3, Links: [1], Backlinks: [0 1 2 4]
+After 35 iterations:
+D: Rank: 0.181875, Index: 4, Links: [3], Backlinks: [0]
